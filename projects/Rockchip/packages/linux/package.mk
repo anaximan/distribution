@@ -7,7 +7,8 @@
 
 PKG_NAME="linux"
 PKG_LICENSE="GPL"
-PKG_SITE="https://github.com/JustEnoughLinuxOS"
+#PKG_SITE="https://github.com/JustEnoughLinuxOS"
+PKG_SITE="https://github.com/anaximan"
 PKG_DEPENDS_HOST="ccache:host rsync:host openssl:host"
 PKG_DEPENDS_TARGET="toolchain linux:host cpio:host kmod:host xz:host lz4:host wireless-regdb keyutils util-linux binutils ncurses openssl:host initramfs ${KERNEL_EXTRA_DEPENDS_TARGET}"
 PKG_DEPENDS_INIT="toolchain"
@@ -26,7 +27,8 @@ case ${DEVICE} in
   ;;
   RK3566)
     PKG_URL="${PKG_SITE}/rk356x-kernel.git"
-    PKG_VERSION="5aef2e6"
+    #PKG_VERSION="5aef2e6"
+    PKG_VERSION="ca51bea"
     GET_HANDLER_SUPPORT="git"
     PKG_GIT_CLONE_BRANCH="main"
   ;;
