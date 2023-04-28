@@ -45,9 +45,6 @@
   # Additional kernel make parameters (for example to specify the u-boot loadaddress)
     KERNEL_MAKE_EXTRACMD=" $(for DTB in "${DEVICE_DTB[@]}"; do echo -n "rockchip/${DTB}.dtb "; done)"
 
-  # Display Resolution
-    SPLASH_RESOLUTION="640x480"
- 
   # Define the CPU
     HW_CPU="Rockchip RK3566"
  
@@ -69,7 +66,7 @@
     EXTRA_CMDLINE="quiet rootwait console=ttyUSB0,1500000 console=tty0 ssh consoleblank=0 systemd.show_status=0 loglevel=0 panic=20 video=HDMI-A-1:1280x720@60"
 
   # additional packages to install
-    ADDITIONAL_PACKAGES=" emulators gamesupport"
+  #  ADDITIONAL_PACKAGES=""
 
   # additional Firmware to use (dvb-firmware, misc-firmware, wlan-firmware)
   # Space separated list is supported,
@@ -92,7 +89,7 @@
 
   # debug tty path
     DEBUG_TTY="/dev/ttyFIQ0"
-    
+
   # build and install PulseAudio support (yes / no)
     PULSEAUDIO_SUPPORT="yes"
 

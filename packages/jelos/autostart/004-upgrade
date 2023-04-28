@@ -4,10 +4,11 @@
 
 . /etc/profile
 
-if [[ "$(cat /storage/.config/boot.hint 2>/dev/null)" =~ UPDATE ]] && [ -e "/storage/.configured" ]
+if [ "$(cat /storage/.config/boot.hint 2>/dev/null)" = "UPDATE" ]
 then
   if [ -e "/usr/share/post-update" ]
   then
+    tocon "Performing post-update configuration..."
     /usr/share/post-update >/var/log/upgrade.log 2>&1
   fi
   rm /storage/.config/boot.hint

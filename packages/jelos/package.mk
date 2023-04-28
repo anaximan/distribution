@@ -14,50 +14,6 @@ PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 PKG_TOOLCHAIN="make"
 
-PKG_BASEOS="plymouth-lite grep wget util-linux xmlstarlet gnupg gzip patchelf imagemagick \
-            terminus-font vim bash pyudev dialog six git dbus-python coreutils \
-            alsa-ucm-conf fbgrab modules system-utils autostart quirks powerstate powertop ectool"
-
-PKG_UI="emulationstation es-themes"
-
-PKG_UI_TOOLS="fileman"
-
-PKG_SOFTWARE=""
-
-case "${ENABLE_32BIT}" in
-  true)
-    PKG_COMPAT="lib32"
-  ;;
-esac
-
-PKG_MULTIMEDIA="ffmpeg vlc mpv"
-
-PKG_NETWORK="network synctools pygobject"
-
-PKG_TOOLS="i2c-tools evtest jslisten"
-
-### Project specific variables
-case "${PROJECT}" in
-  PC)
-    PKG_BASEOS+=" installer"
-  ;;
-  *)
-    PKG_EMUS+=" retropie-shaders"
-  ;;
-esac
-
-if [ ! "${OPENGL}" = "no" ]
-then
-  PKG_DEPENDS_TARGET+=" mesa-demos glmark2"
-fi
-
-if [ ! -z "${BASE_ONLY}" ]
-then
-  PKG_DEPENDS_TARGET+=" ${PKG_BASEOS} ${PKG_NETWORK} ${PKG_TOOLS} ${PKG_UI}"
-else
-  PKG_DEPENDS_TARGET+=" ${PKG_BASEOS} ${PKG_NETWORK} ${PKG_TOOLS} ${PKG_UI} ${PKG_UI_TOOLS} ${PKG_COMPAT} ${PKG_MULTIMEDIA} ${PKG_SOFTWARE}"
-fi
-
 make_target() {
   :
 }
@@ -105,11 +61,12 @@ post_install() {
   chmod 755 ${INSTALL}/usr/share/post-update
 
   # Issue banner
+  BUILD_ID=$(git rev-parse HEAD)
   cp ${PKG_DIR}/sources/issue ${INSTALL}/etc
   ln -s /etc/issue ${INSTALL}/etc/motd
   cat <<EOF >> ${INSTALL}/etc/issue
-==> Build Date: ${BUILD_DATE}
-==> Version: ${OS_VERSION}
+==> Version: ${OS_VERSION} (${BUILD_ID:0:7})
+==> Built: ${BUILD_DATE}
 
 EOF
 
@@ -120,6 +77,9 @@ EOF
   ### Fix and migrate to autostart package
   enable_service jelos-autostart.service
 
+  ### Take a backup of the system configuration on shutdown
+  enable_service save-sysconfig.service
+
   sed -i "s#@DEVICENAME@#${DEVICE}#g" ${INSTALL}/usr/config/system/configs/system.cfg
 
   ### Defaults for non-main builds.
@@ -128,6 +88,12 @@ EOF
   then
     sed -i "s#ssh.enabled=0#ssh.enabled=1#g" ${INSTALL}/usr/config/system/configs/system.cfg
     sed -i "s#network.enabled=0#network.enabled=1#g" ${INSTALL}/usr/config/system/configs/system.cfg
+  fi
+
+  ### Disable automount on AMD64
+  if [ "${DEVICE}" = "AMD64" ]
+  then
+    sed -i "s#system.automount=1#system.automount=0#g" ${INSTALL}/usr/config/system/configs/system.cfg
   fi
 
 }

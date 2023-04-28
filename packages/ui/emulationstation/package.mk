@@ -3,7 +3,7 @@
 # Copyright (C) 2020-present Fewtarius
 
 PKG_NAME="emulationstation"
-PKG_VERSION="17ac1fa"
+PKG_VERSION="5f153d3"
 PKG_GIT_CLONE_BRANCH="main"
 PKG_REV="1"
 PKG_ARCH="any"
@@ -87,9 +87,6 @@ makeinstall_target() {
 	mkdir -p ${INSTALL}/usr/config/locale
 	cp -rf ${PKG_BUILD}/locale/lang/* ${INSTALL}/usr/config/locale/
 
-	mkdir -p ${INSTALL}/usr/lib
-	ln -sf /storage/.config/emulationstation/locale ${INSTALL}/usr/lib/locale
-
 	mkdir -p ${INSTALL}/usr/config/emulationstation/resources
 	cp -rf ${PKG_BUILD}/resources/* ${INSTALL}/usr/config/emulationstation/resources/
 	rm -rf ${INSTALL}/usr/config/emulationstation/resources/logo.png
@@ -115,14 +112,20 @@ makeinstall_target() {
         cp -rf ${PKG_DIR}/config/common/*.cfg ${INSTALL}/usr/config/emulationstation
 
         if [ -d "${PKG_DIR}/config/device/${DEVICE}" ]; then
-        cp -rf ${PKG_DIR}/config/device/${DEVICE}/*.cfg ${INSTALL}/usr/config/emulationstation
+          cp -rf ${PKG_DIR}/config/device/${DEVICE}/*.cfg ${INSTALL}/usr/config/emulationstation
         fi
 
 	ln -sf /storage/.cache/system_timezone ${INSTALL}/etc/timezone
 
 }
 
+
 post_install() {
-	mkdir -p ${INSTALL}/usr/share
-	ln -sf /storage/.config/emulationstation/locale ${INSTALL}/usr/share/locale
+        mkdir -p ${INSTALL}/usr/share
+        ln -sf /storage/.config/locale ${INSTALL}/usr/share/locale
+
+        mkdir -p ${INSTALL}/usr/lib
+        ln -sf /usr/share/locale ${INSTALL}/usr/lib/locale
+
+        ln -sf /usr/share/locale  ${INSTALL}/usr/config/emulationstation/locale
 }

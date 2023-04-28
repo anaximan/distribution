@@ -30,8 +30,17 @@ pre_configure_target() {
 				--disable-vg \
 				--disable-sdl \
 				--enable-sdl2 \
-				--disable-odroidgo2 \
 				--enable-ffmpeg"
+
+  case ${DEVICE} in
+    RK3566-X55)
+      PKG_DEPENDS_TARGET+=" librga libgo2"
+      PKG_CONFIGURE_OPTS_TARGET+=" --enable-odroidgo2"
+    ;;
+    *)
+      PKG_CONFIGURE_OPTS_TARGET+=" --disable-odroidgo2"
+    ;;
+  esac
 
   case ${ARCH} in
     arm)
@@ -85,6 +94,8 @@ makeinstall_target() {
   mkdir -p ${INSTALL}/usr/bin
   cp ${PKG_BUILD}/retroarch ${INSTALL}/usr/bin
   mkdir -p ${INSTALL}/usr/share/retroarch/filters
+
+  cp ${PKG_DIR}/scripts/mkcontroller ${INSTALL}/usr/bin
 
   case ${ARCH} in
     aarch64)

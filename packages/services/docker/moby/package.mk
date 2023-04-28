@@ -50,5 +50,21 @@ make_target() {
 }
 
 makeinstall_target() {
-  :
+  mkdir -p ${INSTALL}/usr/bin
+  cp bin/* ${INSTALL}/usr/bin
+  chmod 0755 ${INSTALL}/usr/bin/*
 }
+
+post_install() {
+  mkdir -p ${INSTALL}/etc
+  ln -sf /storage/.config/docker ${INSTALL}/etc/docker
+  mkdir -p ${INSTALL}/usr/config/docker
+  cat <<EOF >${INSTALL}/usr/config/docker/daemon.json
+{
+  "data-root": "/storage/.config/docker/data"
+}
+EOF
+  enable_service containerd.service
+  enable_service docker.service
+}
+

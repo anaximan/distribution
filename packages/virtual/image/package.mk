@@ -4,15 +4,67 @@
 PKG_NAME="image"
 PKG_LICENSE="GPL"
 PKG_SITE="https://libreelec.tv"
-PKG_DEPENDS_TARGET="toolchain squashfs-tools:host dosfstools:host fakeroot:host kmod:host mtools:host populatefs:host libc gcc linux linux-drivers linux-firmware ${BOOTLOADER} busybox util-linux corefonts misc-packages debug usb-modeswitch unzip poppler textviewer jq socat p7zip file bluez splash initramfs jelos"
+
 PKG_SECTION="virtual"
 PKG_LONGDESC="Root package used to build and create complete image"
 
-# Architecture specific tools
-[ "${ARCH}" = "x86_64" ] && PKG_DEPENDS_TARGET+=" ryzenadj lm_sensors dmidecode xterm"
+PKG_DEPENDS_TARGET="toolchain squashfs-tools:host dosfstools:host fakeroot:host kmod:host \
+                    mtools:host populatefs:host libc gcc linux linux-drivers linux-firmware \
+                    ${BOOTLOADER} busybox util-linux usb-modeswitch unzip poppler jq socat \
+                    p7zip file initramfs grep wget util-linux zstd lz4 empty lzo libzip \
+                    bash coreutils modules system-utils autostart quirks powerstate gnupg \
+                    gzip six xmlstarlet vim pyudev dialog dbus-python network jelos" 
 
-# Sound support
-[ "${ALSA_SUPPORT}" = "yes" ] && PKG_DEPENDS_TARGET+=" alsa"
+PKG_UI="emulationstation es-themes jslisten textviewer"
+
+PKG_UI_TOOLS="fileman fbgrab"
+
+PKG_GRAPHICS="imagemagick splash"
+
+PKG_FONTS="terminus-font corefonts"
+
+PKG_MULTIMEDIA="ffmpeg vlc mpv"
+
+PKG_BLUETOOTH="bluez pygobject"
+
+PKG_SOUND="libao"
+
+PKG_SYNC="synctools"
+
+PKG_TOOLS="patchelf git ectool make i2c-tools evtest powertop"
+
+PKG_DEBUG="debug"
+
+if [ "${BASE_ONLY}" = "true" ]
+then
+  EMULATION_DEVICE=no
+  ENABLE_32BIT=no
+  PKG_DEPENDS_TARGET+=" ${PKG_TOOLS} ${PKG_FONTS}"
+else
+  PKG_DEPENDS_TARGET+=" ${PKG_TOOLS} ${PKG_FONTS} ${PKG_SOUND} ${PKG_BLUETOOTH} ${PKG_SYNC} ${PKG_GRAPHICS} ${PKG_UI} ${PKG_UI_TOOLS} ${PKG_MULTIMEDIA} misc-packages"
+
+  # GL demos and tools
+  [ "${OPENGL_SUPPORT}" = "yes" ]&& PKG_DEPENDS_TARGET+=" mesa-demos glmark2"
+
+  # Sound support
+  [ "${ALSA_SUPPORT}" = "yes" ] && PKG_DEPENDS_TARGET+=" alsa"
+fi
+
+[ "${DISPLAYSERVER}" = "wl" ] && PKG_DEPENDS_TARGET+=" weston"
+
+# Device is an emulation focused device
+[ "${EMULATION_DEVICE}" = "yes" ] && PKG_DEPENDS_TARGET+=" emulators gamesupport"
+
+# Add support for containers
+[ "${CONTAINER_SUPPORT}" = "yes" ] && PKG_DEPENDS_TARGET+=" ${PKG_TOOLS} docker"
+
+[ "${DEBUG_SUPPORT}" = "yes" ] && PKG_DEPENDS_TARGET+=" ${PKG_DEBUG}"
+
+# 32Bit package support
+[ "${ENABLE_32BIT}" == true ] && PKG_DEPENDS_TARGET+=" lib32"
+
+# Architecture specific tools
+[ "${ARCH}" = "x86_64" ] && PKG_DEPENDS_TARGET+=" ryzenadj lm_sensors dmidecode"
 
 # Automounter support
 [ "${UDEVIL}" = "yes" ] && PKG_DEPENDS_TARGET+=" udevil"
