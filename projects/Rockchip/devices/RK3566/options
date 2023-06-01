@@ -55,7 +55,7 @@
     OPENGLES="libmali"
     VULKAN_SUPPORT="no"
 
-    GRAPHIC_DRIVERS=""
+    GRAPHIC_DRIVERS="panfrost"
 
   # Displayserver to use (weston / x11 / no)
     DISPLAYSERVER="no"
